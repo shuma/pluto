@@ -372,13 +372,13 @@ export default function ProjectsPage() {
           <div className="flex-1 flex items-center justify-center p-3 md:p-5">
             <PhoneEmulator className="w-full max-w-[280px] md:max-w-[320px] lg:max-w-[360px] h-full max-h-[500px] md:max-h-[580px] lg:max-h-[640px]">
               {/* Screen Content */}
-              <div className="h-full w-full bg-gray-800 flex items-center justify-center relative">
+              <div className="h-full w-full bg-black flex items-center justify-center relative">
                 {/* Dynamic Island */}
                 {/* <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-black rounded-full"></div> */}
 
                 {/* Content */}
                 <div className="text-center px-8 max-w-64">
-                  <div className="space-y-6">
+                  {/* <div className="space-y-6">
                     <div className="flex items-center gap-1 justify-center">
                       <div className="w-[18px] h-[18px] bg-[#424242] rounded"></div>
                       <span className="text-sm text-[#878787]">
@@ -397,7 +397,7 @@ export default function ProjectsPage() {
                         Select and edit any element
                       </span>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* Getting Ready Text */}

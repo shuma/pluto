@@ -26,7 +26,7 @@ export const PhoneEmulator: React.FC<PhoneEmulatorProps> = ({
               dx="0"
               dy="8"
               stdDeviation="16"
-              flood-color="rgba(0,0,0,0.15)"
+              floodColor="rgba(0,0,0,0.15)"
             ></feDropShadow>
           </filter>
           <filter
@@ -36,9 +36,9 @@ export const PhoneEmulator: React.FC<PhoneEmulatorProps> = ({
             width="427"
             height="880.667"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+            <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
             <feBlend
               mode="normal"
               in="SourceGraphic"
@@ -57,9 +57,9 @@ export const PhoneEmulator: React.FC<PhoneEmulatorProps> = ({
             width="414"
             height="868"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+            <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
             <feBlend
               mode="normal"
               in="SourceGraphic"
@@ -78,9 +78,9 @@ export const PhoneEmulator: React.FC<PhoneEmulatorProps> = ({
             width="6.19085"
             height="11.143"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+            <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
             <feBlend
               mode="normal"
               in="SourceGraphic"
@@ -99,9 +99,9 @@ export const PhoneEmulator: React.FC<PhoneEmulatorProps> = ({
             width="4.95257"
             height="7.71429"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+            <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
             <feBlend
               mode="normal"
               in="SourceGraphic"
@@ -120,9 +120,9 @@ export const PhoneEmulator: React.FC<PhoneEmulatorProps> = ({
             width="3.86682"
             height="6.88293"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+            <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
             <feBlend
               mode="normal"
               in="SourceGraphic"
@@ -141,9 +141,9 @@ export const PhoneEmulator: React.FC<PhoneEmulatorProps> = ({
             width="6.19085"
             height="11.143"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+            <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
             <feBlend
               mode="normal"
               in="SourceGraphic"
@@ -162,9 +162,9 @@ export const PhoneEmulator: React.FC<PhoneEmulatorProps> = ({
             width="4.95257"
             height="7.71429"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+            <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
             <feBlend
               mode="normal"
               in="SourceGraphic"
@@ -183,9 +183,9 @@ export const PhoneEmulator: React.FC<PhoneEmulatorProps> = ({
             width="3.86682"
             height="6.88293"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+            <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
             <feBlend
               mode="normal"
               in="SourceGraphic"
@@ -204,9 +204,9 @@ export const PhoneEmulator: React.FC<PhoneEmulatorProps> = ({
             width="7.80012"
             height="14.0399"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+            <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
             <feBlend
               mode="normal"
               in="SourceGraphic"
@@ -225,9 +225,9 @@ export const PhoneEmulator: React.FC<PhoneEmulatorProps> = ({
             width="6.23957"
             height="9.72004"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+            <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
             <feBlend
               mode="normal"
               in="SourceGraphic"
@@ -246,9 +246,9 @@ export const PhoneEmulator: React.FC<PhoneEmulatorProps> = ({
             width="3.31098"
             height="7.11225"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+            <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
             <feBlend
               mode="normal"
               in="SourceGraphic"
@@ -267,9 +267,9 @@ export const PhoneEmulator: React.FC<PhoneEmulatorProps> = ({
             width="7.80012"
             height="14.0399"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+            <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
             <feBlend
               mode="normal"
               in="SourceGraphic"
@@ -288,9 +288,9 @@ export const PhoneEmulator: React.FC<PhoneEmulatorProps> = ({
             width="6.23957"
             height="9.72004"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+            <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
             <feBlend
               mode="normal"
               in="SourceGraphic"
@@ -309,9 +309,9 @@ export const PhoneEmulator: React.FC<PhoneEmulatorProps> = ({
             width="3.31098"
             height="7.11225"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+            <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
             <feBlend
               mode="normal"
               in="SourceGraphic"
