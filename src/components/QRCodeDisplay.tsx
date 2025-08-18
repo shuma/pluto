@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 interface QRCodeDisplayProps {
   qrCodeUrl: string;
@@ -28,10 +29,12 @@ export const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({
       {/* QR Code */}
       <div className="mb-6">
         <div className="bg-white p-4 rounded-lg inline-block mb-3 shadow-lg">
-          <img
+          <Image
             src={qrCodeUrl}
             alt={`QR Code for ${appName}`}
             className="w-48 h-48"
+            width={192}
+            height={192}
           />
         </div>
         <p className="text-sm text-gray-400 mb-2">📱 Scan with Expo Go app</p>

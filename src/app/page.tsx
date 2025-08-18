@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -35,10 +36,13 @@ export default function Home() {
     >
       {/* Background SVG */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-30">
-        <img
+        <Image
           src="/radient-bg.svg"
           alt="Gradient background"
           className="w-full h-full object-cover"
+          width={1920}
+          height={1080}
+          priority
         />
       </div>
 
@@ -51,6 +55,12 @@ export default function Home() {
           </div>
         </div>
         <div className="flex items-center space-x-4">
+          <a
+            href="/projects"
+            className="text-white hover:text-gray-300 transition-colors"
+          >
+            Projects
+          </a>
           <a
             href="#"
             className="text-white hover:text-gray-300 transition-colors"
