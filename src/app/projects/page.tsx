@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   ChevronDown,
   Download,
@@ -13,16 +12,24 @@ import {
   Code,
   ThumbsUp,
   ThumbsDown,
-  ArrowUp,
-  Camera,
+  ImagePlus,
   Play,
   Settings,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { PhoneEmulator } from "@/components/PhoneEmulator";
+import {
+  PromptInput,
+  PromptInputSubmit,
+  PromptInputTextarea,
+  PromptInputToolbar,
+  PromptInputTools,
+  PromptInputButton,
+} from "@/components/ai-elements/prompt-input";
 
 export default function ProjectsPage() {
   const [activeTab, setActiveTab] = useState("preview");
+  const [inputValue, setInputValue] = useState("");
 
   return (
     <div className="bg-neutral-900 relative h-screen w-full">
@@ -202,29 +209,42 @@ export default function ProjectsPage() {
           </div>
 
           {/* Input Area - Fixed at bottom */}
-          <div className="p-5 border-t border-[#424242]">
-            <div className="bg-[#232323] border border-[#424242] rounded-lg p-3 shadow-lg">
-              <div className="mb-3">
-                <Input
-                  placeholder="Describe the mobile app you want to build"
-                  className="bg-transparent border-none text-white placeholder:text-[#878787] text-sm"
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-[rgba(66,66,66,0.5)] rounded flex items-center justify-center">
-                    <Camera className="h-4 w-4 text-[#878787]" />
-                  </div>
-                  <span className="text-xs text-[#878787]">
+          <div className="p-5 pt-1 bg-transparent">
+            <PromptInput
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (inputValue.trim()) {
+                  console.log("Form submitted:", inputValue);
+                  setInputValue("");
+                }
+              }}
+              className="bg-[#232323] border-[#424242] shadow-lg [&>*]:border-t-0 [&]:divide-y-0"
+            >
+              <PromptInputTextarea
+                placeholder="Describe the mobile app you want to build"
+                className="bg-transparent text-white placeholder:text-[#878787] text-sm border-none focus:border-none focus:outline-none focus:ring-0"
+                value={inputValue}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                  setInputValue(e.target.value)
+                }
+              />
+              <PromptInputToolbar className="px-3 pb-3 border-t-0">
+                <PromptInputTools>
+                  <PromptInputButton variant="ghost" size="icon">
+                    <ImagePlus className="h-4 w-4 text-[#878787]" />
+                  </PromptInputButton>
+                  <span className="text-xs text-[#878787] px-2">
                     5 messages left for today.{" "}
                     <span className="text-white">Upgrade</span>
                   </span>
-                </div>
-                <Button className="w-7 h-7 p-0 bg-white hover:bg-gray-100">
-                  <ArrowUp className="h-4 w-4 text-black" />
-                </Button>
-              </div>
-            </div>
+                </PromptInputTools>
+                <PromptInputSubmit
+                  className="w-7 h-7 p-0 bg-white hover:bg-gray-100 text-black"
+                  size="icon"
+                  disabled={!inputValue.trim()}
+                />
+              </PromptInputToolbar>
+            </PromptInput>
           </div>
         </div>
       </div>

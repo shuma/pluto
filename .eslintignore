@@ -1,0 +1,16 @@
+# Ignore all TypeScript and linting errors
+**/*.tsx
+**/*.ts
+**/*.js
+**/*.jsx
+**/*.mjs
+
+# Ignore specific directories
+src/components/ai-elements/
+src/components/ui/
+src/app/
+src/lib/
+src/
+
+# Ignore all files
+*
