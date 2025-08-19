@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { useSupabase } from "@/lib/contexts/SupabaseContext";
 import {
   ChevronDown,
   Download,
@@ -15,6 +17,7 @@ import {
   ImagePlus,
   Play,
   Settings,
+  LogOut,
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { PhoneEmulator } from "@/components/PhoneEmulator";
@@ -30,6 +33,35 @@ import {
 export default function ProjectsPage() {
   const [activeTab, setActiveTab] = useState("preview");
   const [inputValue, setInputValue] = useState("");
+  const { user, signOut, loading } = useSupabase();
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      // Redirect to home page after successful sign out
+      router.push("/");
+    } catch (error) {
+      console.error("Sign out error:", error);
+    }
+  };
+
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-neutral-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if user is not authenticated (middleware should handle redirect)
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="bg-neutral-900 relative h-screen w-full">
@@ -37,12 +69,24 @@ export default function ProjectsPage() {
       <div className="absolute left-0 top-0 w-full max-w-[518px] min-w-[320px] h-full border-r border-[#424242]">
         <div className="flex flex-col h-full">
           {/* Project Title Section */}
-          <div className="flex items-center justify-center h-16 border-b border-[#424242]">
+          <div className="flex items-center justify-between h-16 border-b border-[#424242] px-4">
             <div className="flex items-center gap-1">
               <span className="text-white text-base font-medium">
                 Minimal Price Tracker
               </span>
               <ChevronDown className="h-6 w-6 text-gray-400" />
+            </div>
+            {/* User Info and Sign Out */}
+            <div className="flex items-center gap-3">
+              <span className="text-white text-sm">{user?.email}</span>
+              <Button
+                onClick={handleSignOut}
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-gray-400 hover:text-white hover:bg-[#2c2c2c]"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
             </div>
           </div>
 
@@ -253,7 +297,13 @@ export default function ProjectsPage() {
       <div className="absolute left-[518px] right-0 top-0 h-full">
         {/* Top Bar */}
         <div className="h-16 border-b border-[#424242] bg-neutral-900 flex items-center justify-between px-5">
-          {/* Left: Project Selection */}
+          {/* Left: Back to Home */}
+          <a
+            href="/"
+            className="text-white hover:text-gray-300 transition-colors text-sm"
+          >
+            ← Back to Home
+          </a>
 
           {/* Center: Tabs */}
           <div className="flex items-center space-x-1 bg-[#2c2c2c] rounded-lg p-1">
