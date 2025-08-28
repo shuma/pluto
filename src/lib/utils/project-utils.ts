@@ -4,6 +4,7 @@ import {
   ProjectStatus,
   Platform,
 } from "../types/project";
+import { supabase } from "@/lib/supabase";
 
 export const mockProjects: Project[] = [
   {
@@ -170,4 +171,90 @@ export function getRelativeTime(date: Date): string {
   if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
   if (diffInDays < 365) return `${Math.floor(diffInDays / 30)} months ago`;
   return `${Math.floor(diffInDays / 365)} years ago`;
+}
+
+export async function getUserProjects(userId: string): Promise<Project[]> {
+  try {
+    const { data: projects, error } = await supabase
+      .from("projects")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching user projects:", error);
+      // Fallback to mock projects if database fails
+      return mockProjects;
+    }
+
+    if (!projects || projects.length === 0) {
+      // Return mock projects if no projects exist
+      return mockProjects;
+    }
+
+    // Transform database projects to match Project interface
+    return projects.map((project) => ({
+      id: project.id,
+      name: project.name,
+      description: project.description || "",
+      status: project.status || "draft",
+      platforms: project.platforms || [],
+      thumbnail: project.thumbnail || "/api/placeholder/300/200",
+      createdAt: new Date(project.created_at),
+      updatedAt: new Date(project.updated_at),
+      lastModified: new Date(project.last_modified),
+      tags: project.tags || [],
+      category: project.category || "other",
+      isLive: project.is_live || false,
+      version: project.version || "1.0.0",
+    }));
+  } catch (error) {
+    console.error("Error in getUserProjects:", error);
+    // Fallback to mock projects
+    return mockProjects;
+  }
+}
+
+export async function createProject(
+  userId: string,
+  projectData: Partial<Project>
+): Promise<Project> {
+  try {
+    const { data: project, error } = await supabase
+      .from("projects")
+      .insert({
+        user_id: userId,
+        name: projectData.name || "New Project",
+        description: projectData.description || "",
+        status: projectData.status || "draft",
+        platforms: projectData.platforms || [],
+        category: projectData.category || "other",
+        tags: projectData.tags || [],
+        is_live: false,
+        version: "1.0.0",
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return {
+      id: project.id,
+      name: project.name,
+      description: project.description || "",
+      status: project.status || "draft",
+      platforms: project.platforms || [],
+      thumbnail: project.thumbnail || "/api/placeholder/300/200",
+      createdAt: new Date(project.created_at),
+      updatedAt: new Date(project.updated_at),
+      lastModified: new Date(project.last_modified),
+      tags: project.tags || [],
+      category: project.category || "other",
+      isLive: project.is_live || false,
+      version: project.version || "1.0.0",
+    };
+  } catch (error) {
+    console.error("Error creating project:", error);
+    throw error;
+  }
 }

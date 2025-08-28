@@ -1,53 +1,70 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useSupabase } from "@/lib/contexts/SupabaseContext";
-import {
-  ChevronDown,
-  Download,
-  Share2,
-  RefreshCw,
-  Globe,
-  Smartphone,
-  Code,
-  ThumbsUp,
-  ThumbsDown,
-  ImagePlus,
-  Play,
-  Settings,
-  LogOut,
-} from "lucide-react";
-import { Logo } from "@/components/ui/Logo";
-import { PhoneEmulator } from "@/components/PhoneEmulator";
-import {
-  PromptInput,
-  PromptInputSubmit,
-  PromptInputTextarea,
-  PromptInputToolbar,
-  PromptInputTools,
-  PromptInputButton,
-} from "@/components/ai-elements/prompt-input";
+import { Plus, LogOut, FolderOpen, Calendar, Tag } from "lucide-react";
+import { getUserProjects, createProject } from "@/lib/utils/project-utils";
+import type { Project } from "@/lib/types/project";
 
 export default function ProjectsPage() {
-  const [activeTab, setActiveTab] = useState("preview");
-  const [inputValue, setInputValue] = useState("");
-  const { user, signOut, loading } = useSupabase();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { user, signOut, loading: authLoading } = useSupabase();
   const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      loadProjects();
+    }
+  }, [user]);
+
+  const loadProjects = async () => {
+    try {
+      setLoading(true);
+      const userProjects = await getUserProjects(user!.id);
+      setProjects(userProjects);
+    } catch (error) {
+      console.error("Failed to load projects:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSignOut = async () => {
     try {
       await signOut();
-      // Redirect to home page after successful sign out
       router.push("/");
     } catch (error) {
       console.error("Sign out error:", error);
     }
   };
 
+  const handleCreateProject = async () => {
+    try {
+      const newProject = await createProject(user!.id, {
+        name: "New Project",
+        description: "Describe your mobile app idea and I'll help you build it",
+        status: "draft",
+        category: "other",
+        tags: [],
+      });
+      router.push(`/projects/${newProject.id}`);
+    } catch (error) {
+      console.error("Failed to create project:", error);
+      // Fallback to random UUID if database fails
+      const newProjectId = crypto.randomUUID();
+      router.push(`/projects/${newProjectId}`);
+    }
+  };
+
+  const handleProjectClick = (projectId: string) => {
+    router.push(`/projects/${projectId}`);
+  };
+
   // Show loading state while checking authentication
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-neutral-900 flex items-center justify-center">
         <div className="text-center">
@@ -58,428 +75,142 @@ export default function ProjectsPage() {
     );
   }
 
-  // Don't render if user is not authenticated (middleware should handle redirect)
+  // Don't render if user is not authenticated
   if (!user) {
     return null;
   }
 
   return (
-    <div className="bg-neutral-900 relative h-screen w-full">
-      {/* Left Sidebar - Responsive width */}
-      <div className="absolute left-0 top-0 w-full max-w-[518px] min-w-[320px] h-full border-r border-[#424242]">
-        <div className="flex flex-col h-full">
-          {/* Project Title Section */}
-          <div className="flex items-center justify-between h-16 border-b border-[#424242] px-4">
-            <div className="flex items-center gap-1">
-              <span className="text-white text-base font-medium">
-                Minimal Price Tracker
-              </span>
-              <ChevronDown className="h-6 w-6 text-gray-400" />
-            </div>
-            {/* User Info and Sign Out */}
-            <div className="flex items-center gap-3">
-              <span className="text-white text-sm">{user?.email}</span>
-              <Button
-                onClick={handleSignOut}
-                variant="ghost"
-                size="sm"
-                className="h-8 px-2 text-gray-400 hover:text-white hover:bg-[#2c2c2c]"
-              >
-                <LogOut className="h-4 w-4" />
-              </Button>
-            </div>
+    <div className="min-h-screen bg-neutral-900">
+      {/* Header */}
+      <div className="border-b border-[#424242] bg-neutral-900">
+        <div className="flex items-center justify-between h-16 px-6">
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-semibold text-white">My Projects</h1>
+            <span className="text-sm text-gray-400">({projects.length})</span>
           </div>
 
-          {/* Main Content Area */}
-          <div className="flex-1 overflow-y-auto p-5">
-            {/* Project Description */}
-            <div className="mb-8">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium text-white">
-                  Project Description
-                </h3>
-                <ChevronDown className="h-4 w-4 text-gray-400" />
-              </div>
-              <div className="bg-[#232323] border border-[#424242] rounded-lg p-3 mb-4">
-                <p className="text-sm text-white leading-5">
-                  Create a simple, Apple-styled minimal app for price tracking.
-                  The UI should be styled to be super clean and minimal,
-                  reflecting the Apple aesthetic and system UI tone.
-                </p>
-              </div>
-            </div>
-
-            {/* AI Thinking Section */}
-            <div className="mb-8">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-6 h-6 bg-[#232323] rounded-lg flex items-center justify-center">
-                  <div className="w-4 h-4 bg-[#424242] rounded-full"></div>
-                </div>
-                <span className="text-sm font-medium bg-gradient-to-r from-white via-white to-[#99999973] bg-clip-text text-transparent">
-                  Thinking
-                </span>
-              </div>
-              <div className="text-sm text-[#878787] leading-6 mb-4">
-                <p>
-                  For an Apple-styled price tracking app, I&apos;ll need to
-                  create:
-                </p>
-                <br />
-                <p>1. A clean home screen with a list of tracked items</p>
-                <p>2. A detail view for each item showing price history</p>
-                <p>3. A way to add new items to track</p>
-                <p>4. A settings screen</p>
-                <br />
-                <p>
-                  The color scheme should be very minimal - whites, light grays,
-                  with accent colors used sparingly. Typography should follow
-                  Apple&apos;s SF Pro style with appropriate weights.
-                </p>
-                <br />
-                <p>Key components:</p>
-                <p>- Item list with price trends (up/down indicators)</p>
-                <p>- Price history chart (line chart)</p>
-                <p>- Add item form</p>
-                <p>- Settings page</p>
-                <br />
-                <p>I&apos;ll use a tab-based navigation with:</p>
-                <p>- Home/Tracking tab</p>
-                <p>- Add Item tab</p>
-                <p>- Settings tab</p>
-                <br />
-                <p>
-                  For data management, I&apos;ll create a context provider to
-                  manage the tracked items state.
-                </p>
-              </div>
-            </div>
-
-            {/* File Activity Log */}
-            <div className="mb-8">
-              <div className="bg-[#232323] border border-[#424242] rounded-lg p-3 mb-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-medium text-white">
-                    Apple-styled Price Tracker App
-                  </h3>
-                  <ChevronDown className="h-4 w-4 text-gray-400" />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-green-400">
-                    <div className="w-4 h-4 bg-green-400 rounded-full"></div>
-                    <span className="text-sm">
-                      Created app/(tabs)/_layout.tsx
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-green-400">
-                    <div className="w-4 h-4 bg-green-400 rounded-full"></div>
-                    <span className="text-sm">
-                      Created app/(tabs)/_layout.tsx
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-green-400">
-                    <div className="w-4 h-4 bg-green-400 rounded-full"></div>
-                    <span className="text-sm">
-                      Created app/(tabs)/_layout.tsx
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-green-400">
-                    <div className="w-4 h-4 bg-green-400 rounded-full"></div>
-                    <span className="text-sm">
-                      Created app/(tabs)/_layout.tsx
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-blue-400">
-                    <div className="w-4 h-4 bg-blue-400 rounded-full"></div>
-                    <span className="text-sm">
-                      Edited app/(tabs)/_layout.tsx
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-blue-400">
-                    <div className="w-4 h-4 bg-blue-400 rounded-full"></div>
-                    <span className="text-sm">
-                      Edited app/(tabs)/_layout.tsx
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-blue-400">
-                    <div className="w-4 h-4 bg-blue-400 rounded-full"></div>
-                    <span className="text-sm">
-                      Edited app/(tabs)/_layout.tsx
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="mb-8">
-              <div className="bg-[#232323] border border-[#424242] rounded-lg p-3">
-                <div className="flex items-center justify-between">
-                  <Button
-                    variant="ghost"
-                    className="h-10 justify-start text-[#878787] hover:bg-[#2c2c2c]"
-                  >
-                    <Smartphone className="h-4 w-4 mr-2" />
-                    Open in Mobile
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="h-10 justify-start text-[#878787] hover:bg-[#2c2c2c]"
-                  >
-                    <Code className="h-4 w-4 mr-2" />
-                    &lt;/&gt; Code
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="h-10 justify-start text-[#878787] hover:bg-[#2c2c2c]"
-                  >
-                    <Share2 className="h-4 w-4 mr-2" />
-                    Share
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="h-10 w-10 p-0 hover:bg-[#2c2c2c]"
-                  >
-                    <ThumbsUp className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="h-10 w-10 p-0 hover:bg-[#2c2c2c]"
-                  >
-                    <ThumbsDown className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Input Area - Fixed at bottom */}
-          <div className="p-5 pt-1 bg-transparent">
-            <PromptInput
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (inputValue.trim()) {
-                  console.log("Form submitted:", inputValue);
-                  setInputValue("");
-                }
-              }}
-              className="bg-[#232323] border-[#424242] shadow-lg [&>*]:border-t-0 [&]:divide-y-0"
+          {/* User Info and Sign Out */}
+          <div className="flex items-center gap-3">
+            <span className="text-white text-sm">{user?.email}</span>
+            <Button
+              onClick={handleSignOut}
+              variant="ghost"
+              size="sm"
+              className="h-8 px-2 text-gray-400 hover:text-white hover:bg-[#2c2c2c]"
             >
-              <PromptInputTextarea
-                placeholder="Describe the mobile app you want to build"
-                className="bg-transparent text-white placeholder:text-[#878787] text-sm border-none focus:border-none focus:outline-none focus:ring-0"
-                value={inputValue}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                  setInputValue(e.target.value)
-                }
-              />
-              <PromptInputToolbar className="px-3 pb-3 border-t-0">
-                <PromptInputTools>
-                  <PromptInputButton variant="ghost" size="icon">
-                    <ImagePlus className="h-4 w-4 text-[#878787]" />
-                  </PromptInputButton>
-                  <span className="text-xs text-[#878787] px-2">
-                    5 messages left for today.{" "}
-                    <span className="text-white">Upgrade</span>
-                  </span>
-                </PromptInputTools>
-                <PromptInputSubmit
-                  className="w-7 h-7 p-0 bg-white hover:bg-gray-100 text-black"
-                  size="icon"
-                  disabled={!inputValue.trim()}
-                />
-              </PromptInputToolbar>
-            </PromptInput>
+              <LogOut className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Right Side - Top Bar and Phone Emulator */}
-      <div className="absolute left-[518px] right-0 top-0 h-full">
-        {/* Top Bar */}
-        <div className="h-16 border-b border-[#424242] bg-neutral-900 flex items-center justify-between px-5">
-          {/* Left: Back to Home */}
-          <a
-            href="/"
-            className="text-white hover:text-gray-300 transition-colors text-sm"
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        {/* Create New Project Button */}
+        <div className="mb-8">
+          <Button
+            onClick={handleCreateProject}
+            className="bg-[#007aff] hover:bg-[#0056cc] text-white px-6 py-3 h-12 text-base"
           >
-            ← Back to Home
-          </a>
+            <Plus className="h-5 w-5 mr-2" />
+            Create New Project
+          </Button>
+        </div>
 
-          {/* Center: Tabs */}
-          <div className="flex items-center space-x-1 bg-[#2c2c2c] rounded-lg p-1">
-            <Button
-              variant={activeTab === "preview" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setActiveTab("preview")}
-              className={`text-sm ${
-                activeTab === "preview"
-                  ? "bg-neutral-900 text-white"
-                  : "text-[#878787]"
-              }`}
-            >
-              Preview
-            </Button>
-            <Button
-              variant={activeTab === "code" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setActiveTab("code")}
-              className={`text-sm ${
-                activeTab === "code"
-                  ? "bg-neutral-900 text-white"
-                  : "text-[#878787]"
-              }`}
-            >
-              Code
-            </Button>
+        {/* Projects Grid */}
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           </div>
-
-          {/* Right: Action Buttons */}
-          <div className="flex items-center space-x-3">
-            <Button className="bg-[#2c2c2c] text-white border-none hover:bg-[#424242]">
-              <div className="w-2 h-2 bg-[#34C759] rounded-full mr-1"></div>
-              Live
-            </Button>
+        ) : projects.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="w-24 h-24 mx-auto bg-gray-700 rounded-full flex items-center justify-center mb-6">
+              <FolderOpen className="w-12 h-12 text-gray-500" />
+            </div>
+            <h3 className="text-xl font-medium text-white mb-2">
+              No projects yet
+            </h3>
+            <p className="text-gray-400 mb-6">
+              Create your first project to get started building mobile apps with
+              AI
+            </p>
             <Button
-              variant="outline"
-              size="sm"
-              className="bg-[#2c2c2c] border-none text-white"
-            >
-              <Settings className="h-4 w-4 mr-1" />
-              Upgrade
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-[#2c2c2c] border-none text-white"
-            >
-              <Download className="h-4 w-4 mr-1" />
-              Export
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-[#2c2c2c] border-none text-white"
-            >
-              <Share2 className="h-4 w-4 mr-1" />
-              Share
-            </Button>
-            <Button
-              size="sm"
+              onClick={handleCreateProject}
               className="bg-[#007aff] hover:bg-[#0056cc] text-white"
             >
-              <Play className="h-4 w-4 mr-1" />
-              Publish
+              <Plus className="h-4 w-4 mr-2" />
+              Create Your First Project
             </Button>
           </div>
-        </div>
-
-        {/* Main Content Area */}
-        <div className="flex-1 h-[calc(100%-4rem)] flex flex-col overflow-hidden">
-          {/* Top Controls Row */}
-          <div className="flex items-center justify-between p-5 pb-0">
-            {/* Test on your Phone Button - Left */}
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-[#2c2c2c] border-none text-white h-10"
-            >
-              <Smartphone className="h-4 w-4 " />
-              Test on your Phone
-            </Button>
-
-            {/* Platform Icons - Right Side */}
-            <div className="flex items-center space-x-2">
-              {/* Platform Tabs Container */}
-              <div className="bg-[#2c2c2c] rounded-lg p-[3px] h-10 w-[132px]">
-                <div className="flex h-full">
-                  {/* Apple Platform Tab */}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="flex-1 h-full p-0 bg-neutral-900 hover:bg-neutral-800 rounded-md"
-                  >
-                    <div className="w-5 h-5 flex items-center justify-center">
-                      <Logo variant="apple" size={16} color="white" />
-                    </div>
-                  </Button>
-
-                  {/* Android Platform Tab */}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="flex-1 h-full p-0 hover:bg-[#424242]"
-                  >
-                    <div className="w-5 h-5 flex items-center justify-center">
-                      <Logo variant="android" size={16} color="white" />
-                    </div>
-                  </Button>
-
-                  {/* Globe Platform Tab */}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="flex-1 h-full p-0 hover:bg-[#424242]"
-                  >
-                    <div className="w-5 h-5 flex items-center justify-center">
-                      <Globe className="w-[13px] h-[13px] text-white" />
-                    </div>
-                  </Button>
-                </div>
-              </div>
-
-              {/* Reload Button */}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-10 w-10 p-0 bg-[#2c2c2c] hover:bg-[#424242] text-white"
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {projects.map((project) => (
+              <div
+                key={project.id}
+                onClick={() => handleProjectClick(project.id)}
+                className="bg-[#232323] border border-[#424242] rounded-lg p-6 cursor-pointer hover:bg-[#2c2c2c] transition-colors"
               >
-                <RefreshCw className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Phone Emulator - Centered in remaining space */}
-          <div className="flex-1 flex items-center justify-center p-3 md:p-5">
-            <PhoneEmulator className="w-full max-w-[280px] md:max-w-[320px] lg:max-w-[360px] h-full max-h-[500px] md:max-h-[580px] lg:max-h-[640px]">
-              {/* Screen Content */}
-              <div className="h-full w-full bg-black flex items-center justify-center relative">
-                {/* Dynamic Island */}
-                {/* <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-black rounded-full"></div> */}
-
-                {/* Content */}
-                <div className="text-center px-8 max-w-64">
-                  {/* <div className="space-y-6">
-                    <div className="flex items-center gap-1 justify-center">
-                      <div className="w-[18px] h-[18px] bg-[#424242] rounded"></div>
-                      <span className="text-sm text-[#878787]">
-                        Chat with AI in the sidebar
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1 justify-center">
-                      <div className="w-[18px] h-[18px] bg-[#424242] rounded"></div>
-                      <span className="text-sm text-[#878787]">
-                        Instantly preview your changes
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1 justify-center">
-                      <div className="w-[18px] h-[18px] bg-[#424242] rounded"></div>
-                      <span className="text-sm text-[#878787]">
-                        Select and edit any element
-                      </span>
-                    </div>
-                  </div> */}
+                <div className="flex items-start justify-between mb-4">
+                  <h3 className="text-lg font-medium text-white">
+                    {project.name}
+                  </h3>
+                  <span
+                    className={`px-2 py-1 text-xs rounded-full ${
+                      project.status === "live"
+                        ? "bg-green-900/20 text-green-400"
+                        : project.status === "in-progress"
+                        ? "bg-blue-900/20 text-blue-400"
+                        : project.status === "draft"
+                        ? "bg-gray-700 text-gray-300"
+                        : "bg-gray-700 text-gray-300"
+                    }`}
+                  >
+                    {project.status}
+                  </span>
                 </div>
 
-                {/* Getting Ready Text */}
-                <div className="absolute bottom-0 left-0 right-0 h-[138px] flex items-center justify-center">
-                  <h2 className="text-xl font-semibold text-white">
-                    Getting everything ready…
-                  </h2>
+                {project.description && (
+                  <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+                    {project.description}
+                  </p>
+                )}
+
+                <div className="flex items-center gap-4 text-xs text-gray-500">
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    {new Date(project.createdAt).toLocaleDateString()}
+                  </div>
+
+                  {project.category && (
+                    <div className="flex items-center gap-1">
+                      <Tag className="h-3 w-3" />
+                      {project.category}
+                    </div>
+                  )}
                 </div>
+
+                {project.tags && project.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    {project.tags.slice(0, 3).map((tag, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 bg-[#2c2c2c] text-gray-400 text-xs rounded"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                    {project.tags.length > 3 && (
+                      <span className="px-2 py-1 bg-[#2c2c2c] text-gray-400 text-xs rounded">
+                        +{project.tags.length - 3}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
-            </PhoneEmulator>
+            ))}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
